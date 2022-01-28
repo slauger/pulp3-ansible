@@ -1,0 +1,85 @@
+---
+- name: check if repository is already present
+  command: |
+    pulp rpm repository show --name {{ repo.name }}
+  ignore_errors: yes
+  register: check_repo
+  changed_when: false
+
+- name: create repository
+  command: |
+    pulp rpm repository create --name {{ repo.name }}
+  when: check_repo.failed
+
+- name: update repository
+  command: |
+    pulp rpm repository update --name {{ repo.name }} \
+      --retain-package-versions 10 \
+      --metadata-checksum-type sha256 \
+      --package-checksum-type sha256 \
+      --sqlite-metadata \
+      --retain-repo-versions 1 \
+      --autopublish
+
+- name: get repository details
+  command: |
+    pulp rpm repository show --name {{ repo.name }}
+  ignore_errors: yes
+  register: check_repo
+  changed_when: false
+
+
+- name: set fact repo_details
+  set_fact:
+    repo_details: "{{ check_repo.stdout }}"
+
+- name: print repository details
+  debug:
+    msg: "{{ repo_details }}"
+
+- name: check for a existing publication
+  shell: |
+    pulp rpm publication list | jq '.[] | select(.repository=="{{ repo_details.pulp_href }}")'
+  register: publication_check
+  changed_when: false
+
+- name: set fact publication_details
+  set_fact:
+    publication_details: "{{ publication_check.stdout }}"
+  when: publication_check.stdout != ""
+
+- name: create new publication
+  command: |
+    pulp rpm publication create --repository {{ repo.name }}
+  when: publication_details is not defined
+
+- name: get publication details once again
+  command: |
+    pulp rpm publication list | jq '.[] | select(.repository=="{{ repo_details.pulp_href }}")'
+  when: publication_details is not defined
+  changed_when: false
+
+- name: set fact publication_details once again
+  set_fact:
+    publication_details: "{{ publication_check.stdout }}"
+  when: publication_details is not defined
+
+- name: print publication_details
+  debug:
+    msg: "{{ publication_details }}"
+
+- name: check for a existing distribution
+  command: |
+    pulp rpm distribution show --name {{ repo.name }}
+  ignore_errors: yes
+  register: repo_distribution
+  changed_when: false
+
+- name: create distribution
+  command: |
+    pulp rpm distribution create --name {{ repo.name }} --base-path {{ repo.name }} --publication {{ publication_details.pulp_href }}
+  when: repo_distribution.failed
+
+- name: update distribution
+  command: |
+    pulp rpm distribution update --name {{ repo.name }} --base-path {{ repo.name }} --publication {{ publication_details.pulp_href }}

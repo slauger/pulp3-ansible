@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: sync repos
+      include_role:
+        name: pulp_repo
+        tasks_from: sync
+      loop: "{{ pulp_repos }}"
+      loop_control:
+        loop_var: repo

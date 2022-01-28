@@ -1,0 +1,19 @@
+---
+- name: debug
+  debug:
+    msg: "{{ remote }}"
+
+- name: check if remote is already present
+  command: |
+    pulp rpm remote show --name {{ remote.name }}
+  ignore_errors: yes
+  register: check_remote
+
+- name: create remote
+  command: |
+    pulp rpm remote create --name {{ remote.name }} --url {{ remote.url }}
+  when: check_remote.failed
+
+- name: update remote
+  command: |
+    pulp rpm remote update --name {{ remote.name }} --url {{ remote.url }}

@@ -1,0 +1,14 @@
+---
+pulp_remotes:
+  - name: remote-puppet-7-el8
+    url: http://yum.puppetlabs.com/puppet/el/8/x86_64/
+  - name: remote-puppet-7-el9
+    url: http://yum.puppetlabs.com/puppet/el/9/x86_64/
+
+pulp_repos:
+  - name: puppet-7-el8
+    remote: remote-puppet-7-el8
+  - name: puppet-7-el9
+    remote: remote-puppet-7-el9
+  - name: test123
+    remote: remote-puppet-7-el9

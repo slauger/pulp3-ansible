@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: create remotes
+      include_role:
+        name: pulp_repo
+        tasks_from: remotes
+      loop: "{{ pulp_remotes }}"
+      loop_control:
+        loop_var: remote
+
+    - name: create repos
+      include_role:
+        name: pulp_repo
+        tasks_from: repos
+      loop: "{{ pulp_repos }}"
+      loop_control:
+        loop_var: repo

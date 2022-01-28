@@ -1,0 +1,4 @@
+---
+- name: sync repository
+  command: |
+    pulp rpm repository sync --name {{ repo.name }} --remote {{ repo.remote }}
