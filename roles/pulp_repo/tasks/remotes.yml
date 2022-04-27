@@ -17,3 +17,26 @@
 - name: update remote
   command: |
     pulp rpm remote update --name {{ remote.name }} --url {{ remote.url }}
+
+- name: update additional settings for remote
+  command: |
+    pulp rpm remo update --name {{ remote.name }} --{{ item }} "{{ remote[item] }}"
+  when: item in remote
+  with_items:
+    - ca-cert
+    - client-cert
+    - client-key
+    - username
+    - password
+    - policy
+    - sles-auth-token
+    - tls-validation
+
+- name: configure proxy settings for remote
+  command: |
+    pulp rpm remo update --name {{ remote.name }} --{{ item }} "{{ remote[item] }}"
+  when: proxy is defined and item in proxy
+  with_items:
+    - proxy-url
+    - proxy-username
+    - proxy-password
