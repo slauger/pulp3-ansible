@@ -38,7 +38,7 @@ iptables -t nat -X
 ## pulp-cli
 
 ```
-pip install pulp-cli[pygments]
+pip3 install pulp-cli[pygments]
 pulp config create --username admin --base-url https://repo01.xxx.tld --password <admin password>
 ```
 
