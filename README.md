@@ -1,5 +1,7 @@
 # pulp3-ansible
 
+Playbooks for creating and syncing rpm repositories in Pulp 3 via pulp CLI.
+
 ## preconfigure pulp3
 
 Example for `settings/settings.py`
