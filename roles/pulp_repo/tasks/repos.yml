@@ -43,6 +43,10 @@
   register: publication_check
   changed_when: false
 
+- name: clear fact publication_details
+  set_fact:
+    publication_details: ""
+
 - name: set fact publication_details
   set_fact:
     publication_details: "{{ publication_check.stdout }}"
@@ -51,25 +55,25 @@
 - name: create new publication
   command: |
     pulp rpm publication create --repository {{ repo.name }}
-  when: publication_details is not defined
+  when: publication_details != ""
 
 - name: get publication details once again
   command: |
     pulp rpm publication list | jq '.[] | select(.repository=="{{ repo_details.pulp_href }}")'
-  when: publication_details is not defined
+  when: publication_details != ""
   changed_when: false
 
 - name: set fact publication_details once again
   set_fact:
     publication_details: "{{ publication_check.stdout }}"
-  when: publication_details is not defined
+  when: publication_details != ""
 
 - name: print publication_details
   debug:
     msg: "{{ publication_details }}"
 
 - name: check for a existing distribution
-  command: |
+  shell: |
     pulp rpm distribution show --name {{ repo.name }}
   ignore_errors: yes
   register: repo_distribution
