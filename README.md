@@ -2,44 +2,27 @@
 
 Playbooks for creating and syncing rpm repositories in Pulp 3 via pulp CLI.
 
-## preconfigure pulp3
+## dependencies
 
-Example for `settings/settings.py`
+- make
+- ansible
+- jq
+- pulp-cli
 
-```
-CONTENT_ORIGIN='https://repo01.xxx.tld'
-ANSIBLE_API_HOSTNAME='https://repo01.xxx.tld'
-ANSIBLE_CONTENT_HOSTNAME='https://repo01.xxx.tld/pulp/content'
-TOKEN_AUTH_DISABLED=True
-ALLOWED_CONTENT_CHECKSUMS = ["md5", "sha1", "sha224", "sha256", "sha384", "sha512"]
-```
-
-## run pulp3 via podman
+## setup pulp server
 
 ```
-podman run -it -d \
-  --publish 8080:80 \
-  --name pulp --rm \
-  --volume "$(pwd)/settings":/etc/pulp \
-  --volume "$(pwd)/pulp_storage":/var/lib/pulp \
-  --volume "$(pwd)/pgsql":/var/lib/pgsql \
-  --volume "$(pwd)/containers":/var/lib/containers \
-  --device /dev/fuse \
-	docker.io/pulp/pulp:3.17
+make install
 ```
 
-## reset nat
+## prepare pulp-cli
 
 ```
-iptables -t filter -F
-iptables -t filter -X
-iptables -t nat -F
-iptables -t nat -X
+podman exec -it pulp bash -c 'pulpcore-manager reset-admin-password'
 ```
 
-## pulp-cli
-
 ```
+apt-get install python3-pip
 pip3 install pulp-cli[pygments]
 pulp config create --username admin --base-url https://repo01.xxx.tld --password <admin password>
 ```
@@ -54,4 +37,15 @@ make repos
 
 ```
 make sync
+```
+
+## debug
+
+### reset nat
+
+```
+iptables -t filter -F
+iptables -t filter -X
+iptables -t nat -F
+iptables -t nat -X
 ```

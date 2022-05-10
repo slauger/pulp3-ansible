@@ -1,0 +1,4 @@
+- name: restart apache
+  ansible.builtin.service:
+    name: "{{ web_service_name | default('apache2') }}"
+    state: restarted

@@ -1,0 +1,4 @@
+---
+pulp_image_url: docker.io/pulp/pulp
+pulp_image_tag: latest
+pulp_basedir: /opt/pulp

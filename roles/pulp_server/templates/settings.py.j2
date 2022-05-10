@@ -1,0 +1,6 @@
+CONTENT_ORIGIN='https://{{ pulp_host | default(ansible_fqdn) }}'
+ANSIBLE_API_HOSTNAME='https://{{ pulp_host | default(ansible_fqdn) }}'
+ANSIBLE_CONTENT_HOSTNAME='https://{{ pulp_host | default(ansible_fqdn) }}/pulp/content'
+TOKEN_AUTH_DISABLED=True
+ALLOWED_CONTENT_CHECKSUMS = ["md5", "sha1", "sha224", "sha256", "sha384", "sha512"]
+

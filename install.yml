@@ -1,0 +1,7 @@
+---
+- hosts: pulp
+  gather_facts: yes
+  roles:
+    - podman
+    - pulp_server
+    - apache

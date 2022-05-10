@@ -1,0 +1,17 @@
+---
+- name: enable mods
+  shell: a2enmod {{ item }}
+  with_items:
+    - rewrite
+    - proxy
+    - proxy_http
+    - ssl
+    - headers
+  notify: restart apache
+
+- name: deploy proxy configuration
+  template:
+    src: proxy.conf.j2
+    dest: /etc/apache2/conf-enabled/proxy.conf
+    mode: 0644
+  notify: restart apache

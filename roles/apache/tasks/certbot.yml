@@ -1,0 +1,4 @@
+---
+- name: deploy ssl certificate
+  shell: |
+    certbot certonly --apache --agree-tos --non-interactive --register-unsafely-without-email -d {{ pulp_host | default(ansible_fqdn) }}
