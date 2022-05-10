@@ -1,0 +1,10 @@
+---
+- name: install apache2 package
+  package:
+    name: apache2
+
+- name: install certbot
+  package:
+    name:
+      - certbot
+      - python3-certbot-apache

@@ -1,0 +1,4 @@
+- name: restart pulp
+  ansible.builtin.service:
+    name: pulp
+    state: restarted

@@ -1,0 +1,65 @@
+<VirtualHost *:80>
+  ServerName {{ pulp_host | default(ansible_fqdn) }}
+
+  ## Vhost docroot
+  DocumentRoot "/var/www/html"
+
+  ## Directories, there should at least be a declaration for /var/www/html
+
+  <Directory "/var/www/html">
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride None
+    Require all granted
+  </Directory>
+
+  ## Logging
+  ErrorLog "/var/log/apache2/http-redirect_error.log"
+  ServerSignature Off
+  CustomLog "/var/log/apache2/http-redirect_access.log" combined 
+  ## Rewrite rules
+  RewriteEngine On
+
+  RewriteCond %{REQUEST_URI} !^/\.well\-known/acme\-challenge/
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName {{ pulp_host | default(ansible_fqdn) }}
+
+  ## Vhost docroot
+  DocumentRoot "/var/www/html"
+
+  ## Directories, there should at least be a declaration for /var/www/html
+
+  <Directory "/var/www/html">
+    Options -Indexes +FollowSymLinks +MultiViews
+    AllowOverride None
+    Require all granted
+  </Directory>
+
+  ## Logging
+  ErrorLog "/var/log/apache2/pulp_error_ssl.log"
+  ServerSignature Off
+  CustomLog "/var/log/apache2/pulp_access_ssl.log" combined 
+
+  ## Proxy rules
+  ProxyRequests Off
+  ProxyPreserveHost On
+  ProxyPass /pulp http://127.0.0.1:8080/pulp
+  ProxyPassReverse /pulp http://127.0.0.1:8080/pulp
+
+  ## SSL directives
+  SSLEngine on
+  SSLCertificateFile      "/etc/letsencrypt/live/{{ pulp_host | default(ansible_fqdn) }}/cert.pem"
+  SSLCertificateKeyFile   "/etc/letsencrypt/live/{{ pulp_host | default(ansible_fqdn) }}/privkey.pem"
+  SSLCertificateChainFile "/etc/letsencrypt/live/{{ pulp_host | default(ansible_fqdn) }}/chain.pem"
+
+  ## Custom fragment
+  Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains; preload"
+  Header always set X-Frame-Options SAMEORIGIN
+  Header always set X-Content-Type-Options nosniff
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "same-origin"
+  Header always set Feature-Policy "geolocation 'none'; microphone 'none'; camera 'none'; payment 'none';"
+</VirtualHost>

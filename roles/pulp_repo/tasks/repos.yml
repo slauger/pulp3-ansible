@@ -58,8 +58,9 @@
   when: publication_details == ""
 
 - name: get publication details once again
-  command: |
+  shell: |
     pulp rpm publication list | jq '.[] | select(.repository=="{{ repo_details.pulp_href }}")'
+  register: publication_check
   changed_when: false
 
 - name: set fact publication_details once again

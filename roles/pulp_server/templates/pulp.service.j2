@@ -1,0 +1,18 @@
+[Unit]
+Description=Podman container instance
+After=network.target
+StartLimitInterval=0
+# newer systemd versions
+#StartLimitIntervalSec=0
+
+[Service]
+Restart=always
+RestartSec=30
+TimeoutStartSec=5m
+EnvironmentFile=-/etc/default/pulp
+ExecStartPre=-/usr/bin/podman rm pulp --force
+ExecStartPre=-/usr/bin/podman pull {{ pulp_image_url }}:{{ pulp_image_tag }}
+ExecStart=/usr/bin/podman run --rm --publish 8080:80 --name pulp --volume {{ pulp_basedir }}/settings:/etc/pulp --volume {{ pulp_basedir }}/pulp_storage:/var/lib/pulp --volume {{ pulp_basedir }}/pgsql:/var/lib/pgsql --volume {{ pulp_basedir }}/containers:/var/lib/containers --device /dev/fuse {{ pulp_image_url }}:{{ pulp_image_tag }}
+
+[Install]
+WantedBy=multi-user.target

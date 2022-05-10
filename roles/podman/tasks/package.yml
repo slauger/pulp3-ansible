@@ -1,4 +1,4 @@
 ---
 - name: install podman package
   package:
-  
+    name: podman

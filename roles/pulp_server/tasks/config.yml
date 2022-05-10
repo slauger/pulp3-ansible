@@ -1,0 +1,32 @@
+- name: setup pulp data directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ pulp_basedir }}"
+    - "{{ pulp_basedir }}/settings"
+    - "{{ pulp_basedir }}/pulp_storage"
+    - "{{ pulp_basedir }}/pgsql"
+    - "{{ pulp_basedir }}/containers"
+
+- name: setup pulp config file
+  template:
+    src: settings.py.j2
+    dest: "{{ pulp_basedir }}/settings/settings.py"
+    mode: 0644
+  notify: restart pulp
+
+- name: setup systemd unit
+  template:
+    src: pulp.service.j2
+    dest: /etc/systemd/system/pulp.service
+    mode: 0644
+  notify: restart pulp
+
+- name: start and enable unit
+  ansible.builtin.systemd:
+    name: pulp
+    state: started
+    enabled: yes
+    daemon_reload: yes
+    
