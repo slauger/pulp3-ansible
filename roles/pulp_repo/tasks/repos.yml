@@ -39,7 +39,7 @@
 
 - name: check for a existing publication
   shell: |
-    pulp rpm publication list | jq '.[] | select(.repository=="{{ repo_details.pulp_href }}")'
+    pulp rpm publication list | jq '[.[] | select(.repository=="{{ repo_details.pulp_href }}")][0]'
   register: publication_check
   changed_when: false
 
@@ -59,7 +59,7 @@
 
 - name: get publication details once again
   shell: |
-    pulp rpm publication list | jq '.[] | select(.repository=="{{ repo_details.pulp_href }}")'
+    pulp rpm publication list | jq '[.[] | select(.repository=="{{ repo_details.pulp_href }}")][0]'
   register: publication_check
   changed_when: false
 
